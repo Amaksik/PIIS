@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -62,6 +63,17 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
+class Node:
+    def __init__(self, state, pred, action, priority=0):
+        self.state = state
+        self.pred = pred
+        self.action = action
+        self.priority = priority
+
+    def __repr__(self):
+        return "State: {0}, Action: {1}".format(self.state, self.action)
+
+
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -70,7 +82,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem: SearchProblem):
     """
@@ -89,15 +102,39 @@ def depthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    closed = set()#visited states
+    queue = util.Queue()
+    queue.push(Node(problem.getStartState(), None, None))
+
+    while not queue.isEmpty():
+        node = queue.pop() #current state
+        #if solution
+        if problem.isGoalState(node.state):
+            moves = list()
+            while node.action is not None:
+                moves.append(node.action)
+                node = node.pred
+            moves.reverse()
+            return moves
+        #add states
+        if node.state not in closed:
+            closed.add(node.state)
+            for s in problem.getSuccessors(node.state):
+                queue.push(Node(s[0], node, s[1]))
+    return list()
+
+    # util.raiseNotDefined()
+
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -105,6 +142,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
