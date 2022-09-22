@@ -106,26 +106,23 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    closed = set()#visited states
-    queue = util.Queue()
-    queue.push(Node(problem.getStartState(), None, None))
 
-    while not queue.isEmpty():
-        node = queue.pop() #current state
-        #if solution
-        if problem.isGoalState(node.state):
-            moves = list()
-            while node.action is not None:
-                moves.append(node.action)
-                node = node.pred
-            moves.reverse()
-            return moves
-        #add states
-        if node.state not in closed:
-            closed.add(node.state)
-            for s in problem.getSuccessors(node.state):
-                queue.push(Node(s[0], node, s[1]))
-    return list()
+    queue = util.Queue()
+    queue.push((problem.getStartState(), []))
+    visited = set()
+
+    while queue:
+        node, path = queue.pop()
+        if problem.isGoalState(node):
+            return path
+        if node in visited:
+            continue
+        for successor in problem.getSuccessors(node):
+            state, action, cost = successor
+            if state not in visited:
+                queue.push((state, path + [action]))
+        #node was visited
+        visited.add(node)
 
     # util.raiseNotDefined()
 
@@ -146,8 +143,37 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    startNode = problem.getStartState()
+    visited = set()
+    g = {startNode: 0}
+
+    openSet = util.PriorityQueue()
+    openSet.push((startNode, []), heuristic(startNode, problem))
+
+    while not openSet.isEmpty():
+        node, path = openSet.pop()
+        if problem.isGoalState(node):
+            return path
+        if node in visited:
+            continue
+        for successor in problem.getSuccessors(node):
+            state, action, cost = successor
+
+            tentativeG = g[node] + cost
+            item = (state, path + [action])
+            priority = tentativeG + heuristic(state, problem)
+
+            if state not in g:
+                g[state] = tentativeG
+                # "not in g" means wasn't in openSet
+                openSet.push(item, priority)
+            # le in case prev if passed
+            if tentativeG <= g[state]:
+                g[state] = tentativeG
+                openSet.update(item, priority)
+        visited.add(node)
+    raise Exception("Path can't be found")
+    #util.raiseNotDefined()
 
 
 # Abbreviations
