@@ -63,17 +63,6 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
-class Node:
-    def __init__(self, state, pred, action, priority=0):
-        self.state = state
-        self.pred = pred
-        self.action = action
-        self.priority = priority
-
-    def __repr__(self):
-        return "State: {0}, Action: {1}".format(self.state, self.action)
-
-
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -159,20 +148,20 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
         for successor in problem.getSuccessors(node):
             state, action, cost = successor
 
-            tentativeG = g[node] + cost
+            currentG = g[node] + cost
             item = (state, path + [action])
-            priority = tentativeG + heuristic(state, problem)
+            priority = currentG + heuristic(state, problem)
 
             if state not in g:
-                g[state] = tentativeG
+                g[state] = currentG
                 # "not in g" means wasn't in openSet
                 openSet.push(item, priority)
             # le in case prev if passed
-            if tentativeG <= g[state]:
-                g[state] = tentativeG
+            if currentG <= g[state]:
+                g[state] = currentG
                 openSet.update(item, priority)
         visited.add(node)
-    raise Exception("Path can't be found")
+    raise Exception("No path could be found")
     #util.raiseNotDefined()
 
 
@@ -190,19 +179,19 @@ def aStarAsGreedySearch(problem: SearchProblem, heuristic=nullHeuristic):
         for successor in problem.getSuccessors(node):
             state, action, cost = successor
 
-            tentativeG = g[node] + cost
+            currentG = g[node] + cost
             item = (state, path + [action])
-            priority = tentativeG
+            priority = currentG
 
             if state not in g:
-                g[state] = tentativeG
+                g[state] = currentG
                 # "not in g" means wasn't in openSet
                 openSet.push(item, priority)
             # le in case prev if passed
-            if tentativeG <= g[state]:
-                g[state] = tentativeG
+            if currentG <= g[state]:
+                g[state] = currentG
                 openSet.update(item, priority)
-    raise Exception("Path can't be found")
+    raise Exception("No path could be found")
 
 
 # Abbreviations
